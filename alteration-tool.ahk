@@ -2,6 +2,8 @@
 
 ; 停止
 global stopSign := false
+; 词缀
+global filter
 
 MyGui.Opt("+Resize +MinSize640x480")
 
@@ -87,10 +89,11 @@ MyGui.Show()
         return
     }
 
-
-
-    
     global stopSign
+
+    global  filters
+    filters := StrSplit(filter.value, ",")
+
     Loop loopnum.value {
 
         if stopSign {
@@ -201,6 +204,8 @@ UseZf(){
 ; 比较装备词缀是否正确
 FilterEquipment(){
 
+    global filters
+
     ; 移动鼠标到指定坐标
     MouseMove zbx.Value, zby.Value
     
@@ -217,10 +222,6 @@ FilterEquipment(){
     copy.value := A_Clipboard
 
     ; 判断剪切板内容是否包含
-
-    ; 检查是否包含 "测试字符"
-    filters := StrSplit(filter.value, ",")
-
     for part in filters {
 
         if InStr(copy.value, part) {
