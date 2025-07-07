@@ -25,13 +25,15 @@ MyGui.AddText("xp-120 yp+30", "循环次数:")
 loopnum := MyGui.AddEdit("xp+70 yp-5 w100", "10")
 
 MyGui.AddText("xp-70 yp+30", "洗的词缀,包含:")
-filter := MyGui.AddEdit("xp+100 yp-5 w200", "护甲提高")
+filter := MyGui.AddEdit("xp+100 yp-5 w200", "护甲提高,测试")
 
-MyGui.Add("GroupBox", "xp-110 yp+40 w600 h370", "装备属性")
+MyGui.AddText("xp+210 yp+5 w200", "词缀 用 , 分开 请注意 中英文 , ，")
 
-copy := MyGui.AddText("xp+10 yp+30 w550 h330", "抗性")
+MyGui.Add("GroupBox", "xp-320 yp+35 w600 h370", "装备属性")
 
-MyGui.Add("Text","xp yp+350", "by mihugui v1.0")
+copy := MyGui.AddEdit("xp+20 yp+30 w550 h330", "抗性")
+
+MyGui.Add("Text","xp-20 yp+350", "by mihugui v1.0")
 
 MyGui.OnEvent("Close", (*) => ExitApp())  ; 关闭窗口时退出脚本
 
@@ -55,7 +57,17 @@ MyGui.Show()
 
 ; 洗装备流程
 ~Alt & 3:: {
-    MsgBox "改造开始"
+
+    ; 判断 
+    if (gzx.Value != "" && gzy.Value != "" && zbx.Value != "" && zby.Value != "" && filter.Value != "") {
+        ; 三个变量都不为空时执行的代码
+        MsgBox "改造开始"
+    }else{
+        MsgBox "坐标不能为空或者筛选不能为空"
+        return
+    }
+
+    
     global stopSign
     Loop loopnum.value {
 
@@ -82,6 +94,18 @@ MyGui.Show()
     global stopSign
 
     stopSign := true
+
+    return
+}
+
+; 停止按钮
+~Alt & 5:: {
+
+    if  FilterEquipment(){
+        MsgBox "改造成功"
+    }else{
+        MsgBox "失败"
+    }
 
     return
 }
@@ -135,10 +159,18 @@ FilterEquipment(){
     ; 判断剪切板内容是否包含
 
     ; 检查是否包含 "测试字符"
-    if InStr(copy.value, filter.value) {
-        return true
-    } else {
-        return false
+    filters := StrSplit(filter.value, ",")
+
+    for part in filters {
+
+        if InStr(copy.value, part) {
+            continue
+        } else {
+            return false
+        }
     }
+
+    return true
+
 
 }
