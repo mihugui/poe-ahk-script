@@ -7,7 +7,7 @@ MyGui.Opt("+Resize +MinSize640x480")
 
 MyGui.Add("GroupBox", "w600 h40", "说明")
 
-MyGui.AddText("xp+10 yp+20", "alt+1 获取改造石位置 alt+2 获取装备位置 alt+3 开始改造 alt+4 停止")
+MyGui.AddText("xp+10 yp+20", "alt+1 获取改造石位置 alt+2  获取装备位置  alt+3 获取增幅石位置 alt+4 开始改造 alt+5 停止")
 
 MyGui.Add("GroupBox", "xp-10 yp+30 w600 h120", "配置")
 
@@ -16,7 +16,13 @@ MyGui.AddText("xp+10 yp+20", "改造石位置:")
 gzx := MyGui.AddEdit("xp+70 yp-5 w40",)
 gzy := MyGui.AddEdit("xp+50 yp w40",)
 
-MyGui.AddText("xp-120 yp+30", "装备位置:")
+zfSign := MyGui.Add("CheckBox", "xp+90 yp+5", "增幅石位置:")
+zfSign.OnEvent("Click", ChangeZf)
+
+zfx := MyGui.AddEdit("xp+90 yp-5 w40",)
+zfy := MyGui.AddEdit("xp+50 yp w40",)
+
+MyGui.AddText("xp-350 yp+30", "装备位置:")
 
 zbx := MyGui.AddEdit("xp+70 yp-5 w40",)
 zby := MyGui.AddEdit("xp+50 yp w40",)
@@ -24,7 +30,7 @@ zby := MyGui.AddEdit("xp+50 yp w40",)
 MyGui.AddText("xp-120 yp+30", "循环次数:")
 loopnum := MyGui.AddEdit("xp+70 yp-5 w100", "10")
 
-MyGui.AddText("xp-70 yp+30", "洗的词缀,包含:")
+MyGui.AddText("xp-70 yp+30", "词缀包含:")
 filter := MyGui.AddEdit("xp+100 yp-5 w200", "护甲提高,测试")
 
 MyGui.AddText("xp+210 yp+5 w200", "词缀 用 , 分开 请注意 中英文 , ，")
@@ -38,6 +44,7 @@ MyGui.Add("Text","xp-20 yp+350", "by mihugui v1.0")
 MyGui.OnEvent("Close", (*) => ExitApp())  ; 关闭窗口时退出脚本
 
 MyGui.Show()
+
 
 
 ; 获取坐标
@@ -55,17 +62,32 @@ MyGui.Show()
     return
 }
 
-; 洗装备流程
 ~Alt & 3:: {
+    MouseGetPos &mouseX, &mouseY  ; 获取鼠标坐标（使用引用传递 &）
+    zfx.Value := mouseX   ; 填入 Edit 控件
+    zfy.Value := mouseY
+    return
+}
+
+; 洗装备流程
+~Alt & 4:: {
 
     ; 判断 
     if (gzx.Value != "" && gzy.Value != "" && zbx.Value != "" && zby.Value != "" && filter.Value != "") {
         ; 三个变量都不为空时执行的代码
+        if zfSign.Value {
+            if (zfx.Value == "" || zfy.Value == "") {
+                MsgBox "增幅已经启用,请确认坐标"
+                return
+            }
+        }
         MsgBox "改造开始"
     }else{
         MsgBox "坐标不能为空或者筛选不能为空"
         return
     }
+
+
 
     
     global stopSign
@@ -85,12 +107,20 @@ MyGui.Show()
 
         ; 改造操作
         UseGz()
+
+        ; 增幅操作
+        if zfSign.Value {
+            UseZf()
+        }
+
     }
+
+    MsgBox "改造结束 未出现对应词缀"
     return
 }
 
 ; 停止按钮
-~Alt & 4:: {
+~Alt & 5:: {
     global stopSign
 
     stopSign := true
@@ -99,23 +129,53 @@ MyGui.Show()
 }
 
 ; 停止按钮
-~Alt & 5:: {
+~Alt & 6:: {
 
-    if  FilterEquipment(){
-        MsgBox "改造成功"
-    }else{
-        MsgBox "失败"
+    if zfSign.Value{
+        MsgBox "启用增幅"
     }
 
     return
 }
 
+; 启用增幅石
+ChangeZf(Ctrl, *) {
+    if (Ctrl.Value) {
+        MsgBox "启用增幅石"
+    }
+}
 
 ; 使用改造石
 UseGz(){
 
     ; 移动鼠标到指定坐标
     MouseMove gzx.Value, gzy.Value
+
+    ; 等待一小段时间让鼠标移动完成
+    Sleep 100
+
+    ; 鼠标右击
+    Click "right"
+
+    Sleep 100
+
+    ; 移动鼠标到指定坐标
+    MouseMove zbx.Value, zby.Value
+
+    Sleep 100
+
+    ; 鼠标左击
+    Click
+
+    Sleep 100
+
+}
+
+; 使用增幅
+UseZf(){
+
+    ; 移动鼠标到指定坐标
+    MouseMove zfx.Value, zfy.Value
 
     ; 等待一小段时间让鼠标移动完成
     Sleep 100
