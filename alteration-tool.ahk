@@ -27,13 +27,13 @@ loopnum := MyGui.AddEdit("xp+70 yp-5 w100", "10")
 MyGui.AddText("xp-70 yp+30", "洗的词缀,包含:")
 filter := MyGui.AddEdit("xp+100 yp-5 w200", "护甲提高")
 
-MyGui.Add("GroupBox", "xp-110 yp+40 w600 h400", "装备属性")
+MyGui.Add("GroupBox", "xp-110 yp+40 w600 h370", "装备属性")
 
-copy := MyGui.AddText("xp+10 yp+30 w550 h350", "抗性")
+copy := MyGui.AddText("xp+10 yp+30 w550 h330", "抗性")
+
+MyGui.Add("Text","xp yp+350", "by mihugui v1.0")
 
 MyGui.OnEvent("Close", (*) => ExitApp())  ; 关闭窗口时退出脚本
-
-
 
 MyGui.Show()
 
