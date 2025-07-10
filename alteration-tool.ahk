@@ -9,9 +9,9 @@ MyGui.Opt("+Resize +MinSize640x480")
 
 MyGui.Add("GroupBox", "w600 h40", "说明")
 
-MyGui.AddText("xp+10 yp+20", "alt+1 获取改造石位置 alt+2  获取装备位置  alt+3 获取增幅石位置 alt+4 开始改造 alt+5 停止")
+MyGui.AddText("xp+10 yp+20", "alt+1 改造石位置 alt+2  装备位置  alt+3 增幅石位置 alt+4 开始改造 alt+5 停止 alt+6 测试")
 
-MyGui.Add("GroupBox", "xp-10 yp+30 w600 h120", "配置")
+MyGui.Add("GroupBox", "xp-10 yp+30 w600 h140", "配置")
 
 MyGui.AddText("xp+10 yp+20", "改造石位置:")
 
@@ -33,13 +33,11 @@ MyGui.AddText("xp-120 yp+30", "循环次数:")
 loopnum := MyGui.AddEdit("xp+70 yp-5 w100", "10")
 
 MyGui.AddText("xp-70 yp+30", "词缀包含:")
-filter := MyGui.AddEdit("xp+100 yp-5 w200", "护甲提高,测试")
+filter := MyGui.AddEdit("xp+70 yp-5 w500 h40", "该装备附加 \b(3[4-9]|4[0-7])\b - \b(7[2-9]|8[0-4])\b 基础物理伤害`n物理伤害提高 \b(17[0-9])\b%")
 
-MyGui.AddText("xp+210 yp+5 w200", "词缀 用 , 分开 请注意 中英文 , ，")
+MyGui.Add("GroupBox", "xp-80 yp+55 w600 h370", "装备属性")
 
-MyGui.Add("GroupBox", "xp-320 yp+35 w600 h370", "装备属性")
-
-copy := MyGui.AddEdit("xp+20 yp+30 w550 h330", "抗性")
+copy := MyGui.AddEdit("xp+20 yp+30 w550 h330", "该装备附加 43 - 84 基础物理伤害 (fractured)`n物理伤害提高 170%")
 
 MyGui.Add("Text","xp-20 yp+350", "by mihugui v1.0")
 
@@ -92,7 +90,9 @@ MyGui.Show()
     global stopSign
 
     global  filters
-    filters := StrSplit(filter.value, ",")
+    filters := StrSplit(filter.value, "`n")
+
+    A_Clipboard := ""
 
     Loop loopnum.value {
 
@@ -118,7 +118,6 @@ MyGui.Show()
 
     }
 
-    MsgBox "改造结束 未出现对应词缀"
     return
 }
 
@@ -134,11 +133,17 @@ MyGui.Show()
 ; 停止按钮
 ~Alt & 6:: {
 
-    if zfSign.Value{
-        MsgBox "启用增幅"
+    global  filters
+    filters := StrSplit(filter.value, "`n")
+
+    for part in filters {
+        if RegExStr(copy.value, part) {
+            MsgBox "成功"
+            return
+        }
     }
 
-    return
+    MsgBox "失败"
 }
 
 ; 启用增幅石
@@ -223,15 +228,23 @@ FilterEquipment(){
 
     ; 判断剪切板内容是否包含
     for part in filters {
-
-        if InStr(copy.value, part) {
-            continue
-        } else {
-            return false
+        if RegExStr(copy.value, part) {
+            return true
         }
     }
 
-    return true
+    return false
 
+}
+
+; 正则匹配数据
+RegExStr(value,filter){
+
+
+    if RegExMatch(value,filter) > 0 {
+        return true
+    }
+
+    return false
 
 }
