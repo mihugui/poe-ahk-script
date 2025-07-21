@@ -30,7 +30,7 @@ zbx := MyGui.AddEdit("xp+70 yp-5 w40",)
 zby := MyGui.AddEdit("xp+50 yp w40",)
 
 MyGui.AddText("xp-120 yp+30", "循环次数:")
-loopnum := MyGui.AddEdit("xp+70 yp-5 w100", "10")
+loopnum := MyGui.AddEdit("xp+70 yp-5 w100", "100")
 
 MyGui.AddText("xp-70 yp+30", "词缀包含:")
 filter := MyGui.AddEdit("xp+70 yp-5 w500 h40", "该装备附加 \b(3[4-9]|4[0-7])\b - \b(7[2-9]|8[0-4])\b 基础物理伤害`n物理伤害提高 \b(17[0-9])\b%")
